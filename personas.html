@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Personas — Online Bookshop</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;600;700&family=Noto+Sans+Thai:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1714;
+    --paper: #faf8f4;
+    --cream: #f3ede3;
+    --accent: #c0533a;
+    --accent2: #3a6e8f;
+    --gold: #b89a4e;
+    --muted: #7a7168;
+    --border: #ddd5c4;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-weight: 300;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    text-align: center;
+    padding: 56px 24px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(255,255,255,0.02) 40px,
+      rgba(255,255,255,0.02) 80px
+    );
+  }
+  header .eyebrow {
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', 'Noto Serif Thai', serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  header p {
+    color: #b0a898;
+    font-size: 14px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Role tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    border-bottom: 2px solid var(--border);
+    background: var(--cream);
+    scrollbar-width: none;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: 0 0 auto;
+    padding: 16px 24px;
+    border: none;
+    background: transparent;
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-btn .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  /* Panels */
+  .panel { display: none; padding: 48px 24px 80px; max-width: 900px; margin: 0 auto; }
+  .panel.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* Persona card */
+  .persona-card {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 32px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 32px;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .persona-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+    background: var(--role-color, var(--accent));
+  }
+  .avatar {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+    background: var(--role-bg, #f5e8e8);
+    border: 2px solid var(--role-color, var(--accent));
+    flex-shrink: 0;
+  }
+  .persona-info h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .persona-info .role-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 2px;
+    background: var(--role-color, var(--accent));
+    color: white;
+    margin-bottom: 16px;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .meta-item label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .meta-item span { font-size: 14px; color: var(--ink); }
+
+  /* Traits */
+  .traits {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;
+  }
+  .trait {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--cream);
+  }
+
+  /* Scenario */
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .scenario {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .scenario-header {
+    background: var(--cream);
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .scenario-header .scene-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--role-color, var(--accent));
+    opacity: 0.3;
+    line-height: 1;
+  }
+  .scenario-header .scene-title {
+    font-weight: 500;
+    font-size: 15px;
+  }
+  .scenario-header .scene-sub {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .scene-body { padding: 24px; }
+
+  /* Chat bubbles */
+  .chat { display: flex; flex-direction: column; gap: 12px; }
+  .msg {
+    display: flex;
+    gap: 10px;
+    max-width: 88%;
+  }
+  .msg.right {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+  .msg-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .msg-bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .msg.left .msg-bubble {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-top-left-radius: 2px;
+  }
+  .msg.right .msg-bubble {
+    background: var(--role-color, var(--accent));
+    color: white;
+    border-top-right-radius: 2px;
+  }
+  .msg-name {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+  }
+  .msg.right .msg-name { text-align: right; }
+
+  /* Thought box */
+  .thought-box {
+    background: #fffbf0;
+    border: 1px dashed var(--gold);
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #5a4a1a;
+    display: flex;
+    gap: 10px;
+  }
+  .thought-box .icon { font-size: 18px; flex-shrink: 0; }
+
+  /* Action steps */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: flex;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--role-color, var(--accent));
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-content { flex: 1; }
+  .step-action { font-size: 14px; font-weight: 500; }
+  .step-detail { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* Pain & Goal */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .info-box {
+    border-radius: 4px;
+    padding: 16px 20px;
+    font-size: 13px;
+  }
+  .info-box.pain { background: #fff5f5; border: 1px solid #f5c6c6; }
+  .info-box.goal { background: #f0fff4; border: 1px solid #b8e6c8; }
+  .info-box h4 { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+  .info-box.pain h4 { color: #c0392b; }
+  .info-box.goal h4 { color: #27ae60; }
+  .info-box ul { padding-left: 16px; }
+  .info-box li { margin-bottom: 4px; }
+
+  @media (max-width: 600px) {
+    .persona-card { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">UX Research · Persona Document</div>
+  <h1>User Personas<br><em style="font-style:italic;font-weight:400;font-size:0.7em">Online Bookshop</em></h1>
+  <p>จำลองสถานการณ์การใช้งานจริงของแต่ละ role เพื่อเข้าใจมุมมองและความต้องการ</p>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" onclick="showTab('customer1')"><span class="dot"></span>นิชา · ลูกค้าทั่วไป</button>
+  <button class="tab-btn" onclick="showTab('customer2')"><span class="dot"></span>ภูมิ · นักสะสม</button>
+  <button class="tab-btn" onclick="showTab('admin')"><span class="dot"></span>อาภา · Admin</button>
+  <button class="tab-btn" onclick="showTab('inventory')"><span class="dot"></span>กิตติ · Inventory</button>
+  <button class="tab-btn" onclick="showTab('payment')"><span class="dot"></span>Finpay · บริษัทชำระเงิน</button>
+  <button class="tab-btn" onclick="showTab('shipment')"><span class="dot"></span>Swift · ขนส่ง</button>
+</nav>
+
+<!-- ─────────────── CUSTOMER 1 ─────────────── -->
+<div id="customer1" class="panel active" style="--role-color:#c0533a;--role-bg:#f9ece8">
+
+  <div class="persona-card">
+    <div class="avatar">📚</div>
+    <div class="persona-info">
+      <h2>นิชา วงศ์สุวรรณ</h2>
+      <span class="role-tag">Customer · ลูกค้าทั่วไป</span>
+      <div class="traits">
+        <span class="trait">อ่านก่อนนอนทุกคืน</span>
+        <span class="trait">ชอบนิยายแฟนตาซี</span>
+        <span class="trait">ใช้มือถือเป็นหลัก</span>
+        <span class="trait">ตัดสินใจจากรีวิว</span>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><label>อายุ</label><span>24 ปี</span></div>
+        <div class="meta-item"><label>อาชีพ</label><span>พนักงานออฟฟิศ</span></div>
+        <div class="meta-item"><label>งบ/เดือน</label><span>300–600 บาท</span></div>
+        <div class="meta-item"><label>อุปกรณ์</label><span>iPhone, มือถือเป็นหลัก</span></div>
+        <div class="meta-item"><label>ความถี่</label><span>ซื้อ 1–2 เล่ม/เดือน</span></div>
+        <div class="meta-item"><label>ชอบ</label><span>แฟนตาซี, โรแมนซ์</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="info-box pain">
+      <h4>😣 Pain Points</h4>
+      <ul>
+        <li>ไม่รู้ว่าหนังสือดีหรือเปล่าก่อนซื้อ</li>
+        <li>กลัวสั่งแล้วได้ของไม่ตรงปก</li>
+        <li>ขี้เกียจ checkout หลายขั้นตอน</li>
+      </ul>
+    </div>
+    <div class="info-box goal">
+      <h4>🎯 Goals</h4>
+      <ul>
+        <li>อยากได้หนังสือที่ชอบโดยไม่ต้องเสียเวลาหา</li>
+        <li>อ่านตัวอย่างก่อนตัดสินใจ</li>
+        <li>จ่ายเงินง่าย ได้ของไว</li>
+      </ul>
+    </div>
+  </div>
+
+  <br>
+  <div class="section-label">Roleplay Scenario — วันธรรมดา หลังเลิกงาน</div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scene-num">01</span>
+      <div>
+        <div class="scene-title">ค้นหาหนังสือจากคำแนะนำเพื่อน</div>
+        <div class="scene-sub">เวลา 22:30 น. · นอนอยู่บนเตียง · ใช้มือถือ</div>
+      </div>
+    </div>
+    <div class="scene-body">
+      <div class="thought-box">
+        <span class="icon">💭</span>
+        <span>เพื่อนแนะนำว่า "The Name of the Wind" อ่านดีมาก อยากลองดูว่าน่าซื้อมั้ย ลองหาในแอปดีกว่า</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <div class="step-content">
+            <div class="step-action">เปิดแอป → Search "The Name of the Wind"</div>
+            <div class="step-detail">ผลลัพธ์ขึ้นมาทันที เห็นปกหนังสือ ราคา และ rating ⭐ 4.8</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div class="step-content">
+            <div class="step-action">กดอ่านตัวอย่าง (Read Sample)</div>
+            <div class="step-detail">อ่านไป 3 หน้าแรก รู้สึกติดใจ บรรยากาศดี ภาษาอ่านง่าย</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <div class="step-content">
+            <div class="step-action">เลื่อนดูรีวิวจากผู้ซื้อจริง</div>
+            <div class="step-detail">อ่านรีวิว 5 รายการ มี 2 คนเตือนว่า "หนังสือหนามาก เตรียมใจไว้" → ยิ่งอยากอ่าน</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <div class="step-content">
+            <div class="step-action">กด Like ♡ เก็บไว้ก่อน แล้ว Add to Cart</div>
+            <div class="step-detail">ยังไม่แน่ใจเรื่องเงิน เลย Like ไว้ใน Wishlist ก่อน แต่สุดท้ายก็ใส่ตะกร้าเลย</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">5</span>
+          <div class="step-content">
+            <div class="step-action">Checkout → เลือกจ่ายผ่าน PromptPay</div>
+            <div class="step-detail">สแกน QR จ่าย 379 บาท ระบบแจ้งยืนยันทันที "สั่งซื้อสำเร็จ!"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scene-num">02</span>
+      <div>
+        <div class="scene-title">ได้รับหนังสือแล้ว → เขียนรีวิว</div>
+        <div class="scene-sub">3 วันหลังสั่ง · อ่านจบแล้ว</div>
+      </div>
+    </div>
+    <div class="scene-body">
+      <div class="chat">
+        <div class="msg left">
+          <div class="msg-avatar">🔔</div>
+          <div>
+            <div class="msg-name">ระบบแจ้งเตือน</div>
+            <div class="msg-bubble">คุณนิชา ได้รับหนังสือแล้วใช่ไหม? ช่วยรีวิวให้คนอื่นด้วยนะคะ 📖</div>
+          </div>
+        </div>
+        <div class="msg right">
+          <div class="msg-avatar">📚</div>
+          <div>
+            <div class="msg-name">นิชา</div>
+            <div class="msg-bubble">โอเค รีวิวเลยเพราะอ่านจบพอดี ให้ 5 ดาว เล่าว่าชอบตรงไหน แนะนำคนชอบแนวแฟนตาซี</div>
+          </div>
+        </div>
+        <div class="msg left">
+          <div class="msg-avatar">✅</div>
+          <div>
+            <div class="msg-name">ระบบ</div>
+            <div class="msg-bubble">ขอบคุณสำหรับรีวิวค่ะ! รีวิวของคุณช่วยคนอื่นในการตัดสินใจ 🎉</div>
+          </div>
+        </div>
+      </div>
+      <div class="thought-box" style="margin-top:16px">
+        <span class="icon">😊</span>
+        <span>นิชารู้สึกดีที่ได้แชร์ประสบการณ์ และสังเกตว่ามีหนังสือเล่มต่อแนะนำอยู่ด้านล่าง... เพิ่ม Wishlist อีกแล้ว</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── CUSTOMER 2 ─────────────── -->
+<div id="customer2" class="panel" style="--role-color:#3a6e8f;--role-bg:#e8f2f9">
+
+  <div class="persona-card">
+    <div class="avatar">🏛️</div>
+    <div class="persona-info">
+      <h2>ภูมิรพี ตั้งสกุล</h2>
+      <span class="role-tag">Customer · นักสะสมหนังสือ</span>
+      <div class="traits">
+        <span class="trait">สะสมหนังสือปกแข็ง</span>
+        <span class="trait">ชอบปรัชญา, ประวัติศาสตร์</span>
+        <span class="trait">ใช้ iPad</span>
+        <span class="trait">เช็คสต็อกก่อนเสมอ</span>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><label>อายุ</label><span>38 ปี</span></div>
+        <div class="meta-item"><label>อาชีพ</label><span>อาจารย์มหาวิทยาลัย</span></div>
+        <div class="meta-item"><label>งบ/เดือน</label><span>2,000–5,000 บาท</span></div>
+        <div class="meta-item"><label>อุปกรณ์</label><span>iPad Pro, MacBook</span></div>
+        <div class="meta-item"><label>ความถี่</label><span>สะสม 5–10 เล่ม/เดือน</span></div>
+        <div class="meta-item"><label>ชอบ</label><span>ปรัชญา, ประวัติศาสตร์, Sci-Fi</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="info-box pain">
+      <h4>😣 Pain Points</h4>
+      <ul>
+        <li>หาหนังสือหายากไม่เจอ</li>
+        <li>ข้อมูลหนังสือไม่ละเอียดพอ (จำนวนหน้า, สำนักพิมพ์)</li>
+        <li>สต็อกหมดแล้วไม่มีแจ้งเตือน</li>
+      </ul>
+    </div>
+    <div class="info-box goal">
+      <h4>🎯 Goals</h4>
+      <ul>
+        <li>อยากได้หนังสือที่หายากและหนังสือ highlight</li>
+        <li>ติดตามรายการที่สนใจได้ง่าย</li>
+        <li>ซื้อครั้งละหลายเล่ม จัดส่งรวม</li>
+      </ul>
+    </div>
+  </div>
+
+  <br>
+  <div class="section-label">Roleplay Scenario — วันเสาร์บ่าย</div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scene-num">01</span>
+      <div>
+        <div class="scene-title">ช้อปปิ้งหนังสือรายเดือน</div>
+        <div class="scene-sub">บ่ายโมง · นั่งที่ร้านกาแฟ · ใช้ iPad</div>
+      </div>
+    </div>
+    <div class="scene-body">
+      <div class="thought-box">
+        <span class="icon">💭</span>
+        <span>เดือนนี้อยากได้หนังสือ Highlighted ที่เว็บแนะนำ และตามหา "Meditations" ของ Marcus Aurelius ฉบับแปลไทยที่เคย Wishlist ไว้</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <div class="step-content">
+            <div class="step-action">เข้าหน้า Highlighted Books</div>
+            <div class="step-detail">เห็น banner หนังสือที่ Admin highlight ไว้ 5 เล่ม — ดูน่าสนใจ 2 เล่ม</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div class="step-content">
+            <div class="step-action">เปิด My Wishlist เช็ครายการที่ Like ไว้</div>
+            <div class="step-detail">มี 12 เล่มใน Wishlist เลือก 4 เล่มที่อยากได้วันนี้ → Add to Cart ทีเดียว</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <div class="step-content">
+            <div class="step-action">เช็ค Cart ก่อน Checkout</div>
+            <div class="step-detail">รวม 6 เล่ม ราคา 2,340 บาท ระบบแสดงค่าส่งและเวลาจัดส่งโดยประมาณ</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <div class="step-content">
+            <div class="step-action">เลือกจ่ายบัตรเครดิต → ยืนยัน</div>
+            <div class="step-detail">ได้รับ Order ID และอีเมลยืนยัน พร้อม Tracking Number</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── ADMIN ─────────────── -->
+<div id="admin" class="panel" style="--role-color:#6a3d9a;--role-bg:#f3eeff">
+
+  <div class="persona-card">
+    <div class="avatar">⚡</div>
+    <div class="persona-info">
+      <h2>อาภา ศรีสมบูรณ์</h2>
+      <span class="role-tag">Admin · ผู้จัดการระบบ</span>
+      <div class="traits">
+        <span class="trait">ทำงานเป็นระเบียบ</span>
+        <span class="trait">ชอบ Data-driven</span>
+        <span class="trait">ใจเย็นกับรีวิวแย่</span>
+        <span class="trait">จัดการรวดเร็ว</span>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><label>อายุ</label><span>31 ปี</span></div>
+        <div class="meta-item"><label>อาชีพ</label><span>E-commerce Manager</span></div>
+        <div class="meta-item"><label>ประสบการณ์</label><span>5 ปี</span></div>
+        <div class="meta-item"><label>อุปกรณ์</label><span>Desktop + Dual Monitor</span></div>
+        <div class="meta-item"><label>เข้าระบบ</label><span>ทุกวัน 8:30–18:00</span></div>
+        <div class="meta-item"><label>ความสำคัญ</label><span>Content & Order mgmt</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="info-box pain">
+      <h4>😣 Pain Points</h4>
+      <ul>
+        <li>อัปโหลดหนังสือใหม่ทีละเล่มช้ามาก</li>
+        <li>รีวิวไม่ดีโผล่มาแล้วลูกค้าเห็นก่อน moderate</li>
+        <li>ต้องประสานงานกับหลาย department</li>
+      </ul>
+    </div>
+    <div class="info-box goal">
+      <h4>🎯 Goals</h4>
+      <ul>
+        <li>อัปเดตข้อมูลหนังสือได้ไว</li>
+        <li>คุมคุณภาพ content และ review</li>
+        <li>ดู order overview แบบ real-time</li>
+      </ul>
+    </div>
+  </div>
+
+  <br>
+  <div class="section-label">Roleplay Scenario — เช้าวันจันทร์</div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scene-num">01</span>
+      <div>
+        <div class="scene-title">เพิ่มหนังสือใหม่ + Highlight โปรโมชั่น</div>
+        <div class="scene-sub">9:00 น. · หลัง stand-up meeting · ที่ออฟฟิศ</div>
+      </div>
+    </div>
+    <div class="scene-body">
+      <div class="thought-box">
+        <span class="icon">💭</span>
+        <span>สำนักพิมพ์ส่ง list หนังสือใหม่ 8 เล่มมาเมื่อวาน ต้องลงระบบให้เสร็จก่อนเที่ยง และต้องเลือก Highlight หนังสือสำหรับแคมเปญ "หนังสือดีประจำเดือน"</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <div class="step-content">
+            <div class="step-action">Login Admin Panel → ไปที่ Book Management</div>
+            <div class="step-detail">เห็น dashboard สรุปยอด order วันนี้ 47 orders, ยอดขายรวม 18,320 บาท</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div class="step-content">
+            <div class="step-action">Add Book → กรอกข้อมูลครบ 8 เล่ม</div>
+            <div class="step-detail">ชื่อ, ISBN, ราคา, หมวดหมู่, จำนวนสต็อก, อัปโหลดปกและตัวอย่าง PDF</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <div class="step-content">
+            <div class="step-action">เลือก 3 เล่มที่ดีที่สุด → Toggle "Highlight"</div>
+            <div class="step-detail">หนังสือ highlighted จะขึ้น banner หน้าแรก พร้อม badge พิเศษ</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <div class="step-content">
+            <div class="step-action">Manage Sample → อัปโหลดไฟล์ตัวอย่างให้หนังสือใหม่</div>
+            <div class="step-detail">ตัดให้เหลือแค่ 3 บทแรก บันทึกเป็น PDF แล้วอัปโหลด set is_active = true</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scene-num">02</span>
+      <div>
+        <div class="scene-title">Moderate รีวิวที่ต้องสงสัย</div>
+        <div class="scene-sub">14:00 น. · หลังพักกลางวัน</div>
+      </div>
+    </div>
+    <div class="scene-body">
+      <div class="chat">
+        <div class="msg left">
+          <div class="msg-avatar">🔔</div>
+          <div>
+            <div class="msg-name">ระบบแจ้งเตือน</div>
+            <div class="msg-bubble">มีรีวิวใหม่ 12 รายการรอการตรวจสอบ พบ 1 รายการที่อาจมีเนื้อหาไม่เหมาะสม</div>
+          </div>
+        </div>
+        <div class="msg right">
+          <div class="msg-avatar">⚡</div>
+          <div>
+            <div class="msg-name">อาภา</div>
+            <div class="msg-bubble">เปิดดู Review Management — รีวิวนั้นด่าสำนักพิมพ์ไม่เกี่ยวเนื้อหาหนังสือ ลบออกได้เลย</div>
+          </div>
+        </div>
+        <div class="msg left">
+          <div class="msg-avatar">✅</div>
+          <div>
+            <div class="msg-name">ระบบ</div>
+            <div class="msg-bubble">ลบรีวิวสำเร็จ บันทึก log การดำเนินการไว้แล้ว</div>
+          </div>
+        </div>
+        <div class="msg right">
+          <div class="msg-avatar">⚡</div>
+          <div>
+            <div class="msg-name">อาภา</div>
+            <div class="msg-bubble">Approve อีก 11 รายการที่เหลือ — รีวิวปกติดี บางคนให้ feedback ดีมากเลย</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── INVENTORY ─────────────── -->
+<div id="inventory" class="panel" style="--role-color:#2e8b57;--role-bg:#e8f8ee">
+
+  <div class="persona-card">
+    <div class="avatar">📦</div>
+    <div class="persona-info">
+      <h2>กิตติพงษ์ มานะดี</h2>
+      <span class="role-tag">Inventory Employee · พนักงานคลังสินค้า</span>
+      <div class="traits">
+        <span class="trait">ละเอียด ชอบจดบันทึก</span>
+        <span class="trait">ทำงานกะเช้า</span>
+        <span class="trait">ใช้ tablet หน้างาน</span>
+        <span class="trait">เช็คสต็อกทุกวัน</span>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><label>อายุ</label><span>27 ปี</span></div>
+        <div class="meta-item"><label>อาชีพ</label><span>พนักงานคลังสินค้า</span></div>
+        <div class="meta-item"><label>กะ</label><span>08:00–17:00</span></div>
+        <div class="meta-item"><label>อุปกรณ์</label><span>Android Tablet</span></div>
+        <div class="meta-item"><label>หน้าที่</label><span>รับ-จ่ายสต็อก</span></div>
+        <div class="meta-item"><label>รายงาน</label><span>ส่ง Admin ทุกวัน</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="info-box pain">
+      <h4>😣 Pain Points</h4>
+      <ul>
+        <li>สต็อกในระบบกับของจริงไม่ตรงกัน</li>
+        <li>บันทึก log แต่ละครั้งกินเวลา</li>
+        <li>ไม่รู้ล่วงหน้าว่ายอดขายพรุ่งนี้จะสูง</li>
+      </ul>
+    </div>
+    <div class="info-box goal">
+      <h4>🎯 Goals</h4>
+      <ul>
+        <li>อัปเดต inventory ได้เร็วและแม่นยำ</li>
+        <li>ดู log ย้อนหลังเพื่อตรวจสอบ</li>
+        <li>แจ้งเตือนเมื่อสต็อกใกล้หมด</li>
+      </ul>
+    </div>
+  </div>
+
+  <br>
+  <div class="section-label">Roleplay Scenario — เช้าตรู่วันพุธ</div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scene-num">01</span>
+      <div>
+        <div class="scene-title">รับของใหม่ → อัปเดต Inventory</div>
+        <div class="scene-sub">8:30 น. · หน้าคลังสินค้า · ใช้ Tablet</div>
+      </div>
+    </div>
+    <div class="scene-body">
+      <div class="thought-box">
+        <span class="icon">💭</span>
+        <span>รถขนส่งมาส่งหนังสือใหม่จากสำนักพิมพ์ 200 เล่ม ต้องนับและอัปเดตระบบให้เสร็จก่อนที่ order จะเริ่ม process</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <div class="step-content">
+            <div class="step-action">Login → View Inventory</div>
+            <div class="step-detail">เห็นรายการหนังสือทั้งหมด ระบบแจ้งเตือนว่า "The Name of the Wind" เหลือ 3 เล่ม (ต่ำกว่า threshold)</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div class="step-content">
+            <div class="step-action">นับของที่รับมา → Update Inventory</div>
+            <div class="step-detail">กรอกจำนวนที่รับเพิ่มแต่ละ ISBN พร้อมหมายเหตุ "รับจากสำนักพิมพ์ ABC"</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <div class="step-content">
+            <div class="step-action">ระบบบันทึก Inventory Log อัตโนมัติ</div>
+            <div class="step-detail">บันทึก: วันที่, ชื่อพนักงาน, จำนวนที่เปลี่ยน (+50 เล่ม), หมายเหตุ</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <div class="step-content">
+            <div class="step-action">View Inventory Log — เช็คความถูกต้อง</div>
+            <div class="step-detail">เปรียบเทียบกับ log เมื่อวาน ยอดตรงกัน ส่งสรุปให้ Admin ผ่านระบบ</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── PAYMENT CO ─────────────── -->
+<div id="payment" class="panel" style="--role-color:#1a6b9a;--role-bg:#e6f4ff">
+
+  <div class="persona-card">
+    <div class="avatar">💳</div>
+    <div class="persona-info">
+      <h2>FinPay System · ระบบ Finpay Co., Ltd.</h2>
+      <span class="role-tag">Payment Company · ผู้ให้บริการชำระเงิน</span>
+      <div class="traits">
+        <span class="trait">Automated API</span>
+        <span class="trait">Real-time webhook</span>
+        <span class="trait">99.9% uptime SLA</span>
+        <span class="trait">PCI-DSS Certified</span>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><label>ประเภท</label><span>บริษัทชำระเงิน</span></div>
+        <div class="meta-item"><label>การทำงาน</label><span>Automated + Manual review</span></div>
+        <div class="meta-item"><label>ช่องทาง</label><span>QR, Card, Bank transfer</span></div>
+        <div class="meta-item"><label>ผู้ดูแล</label><span>ทีม Ops + Developer</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="info-box pain">
+      <h4>😣 Pain Points</h4>
+      <ul>
+        <li>Transaction ค้างเมื่อ network หลุด</li>
+        <li>ลูกค้า dispute ยอดเงินผิด</li>
+        <li>ต้อง reconcile ทุกวัน</li>
+      </ul>
+    </div>
+    <div class="info-box goal">
+      <h4>🎯 Goals</h4>
+      <ul>
+        <li>อัปเดต payment status ได้ real-time</li>
+        <li>ลดขั้นตอน manual intervention</li>
+        <li>audit trail ครบถ้วน</li>
+      </ul>
+    </div>
+  </div>
+
+  <br>
+  <div class="section-label">Roleplay Scenario — ทุกครั้งที่มี Order ใหม่</div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scene-num">01</span>
+      <div>
+        <div class="scene-title">ประมวลผลการชำระเงิน QR PromptPay</div>
+        <div class="scene-sub">Automated Flow · เกิดขึ้น &lt;3 วินาที</div>
+      </div>
+    </div>
+    <div class="scene-body">
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <div class="step-content">
+            <div class="step-action">รับ Payment Request จาก Bookshop API</div>
+            <div class="step-detail">order_id, amount=379, method=promptpay, user_id</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div class="step-content">
+            <div class="step-action">Read Payment Order → ตรวจสอบข้อมูล</div>
+            <div class="step-detail">validate ยอดเงิน, เช็ค duplicate transaction, verify user identity</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <div class="step-content">
+            <div class="step-action">Generate QR Code → ส่งกลับให้ลูกค้า</div>
+            <div class="step-detail">QR หมดอายุใน 10 นาที ลูกค้าสแกนจ่าย</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <div class="step-content">
+            <div class="step-action">ยืนยันรับเงิน → Update Payment Status = "SUCCESS"</div>
+            <div class="step-detail">ส่ง webhook กลับ Bookshop ระบบ Bookshop update order status เป็น "paid" ทันที</div>
+          </div>
+        </div>
+      </div>
+      <div class="thought-box">
+        <span class="icon">⚠️</span>
+        <span>กรณีพิเศษ: ถ้าลูกค้าสแกนแล้วเงินหักแต่ webhook ส่งไม่ถึง — FinPay จะ retry 3 ครั้ง ถ้ายังไม่ได้จะ flag เป็น "PENDING_REVIEW" ให้ Ops team เช็คและ Update Payment Status ด้วยตัวเอง</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── SHIPMENT CO ─────────────── -->
+<div id="shipment" class="panel" style="--role-color:#7a5c00;--role-bg:#fff8e1">
+
+  <div class="persona-card">
+    <div class="avatar">🚚</div>
+    <div class="persona-info">
+      <h2>วิชัย ทรัพย์มั่น · Swift Logistics</h2>
+      <span class="role-tag">Shipment Company · พนักงานจัดส่ง</span>
+      <div class="traits">
+        <span class="trait">ทำงานภาคสนาม</span>
+        <span class="trait">ใช้มือถือ Android</span>
+        <span class="trait">ส่งของทั่ว กทม.</span>
+        <span class="trait">อัปเดตสถานะ real-time</span>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><label>อายุ</label><span>33 ปี</span></div>
+        <div class="meta-item"><label>อาชีพ</label><span>พนักงานขนส่ง</span></div>
+        <div class="meta-item"><label>กะ</label><span>07:00–16:00</span></div>
+        <div class="meta-item"><label>รับผิดชอบ</label><span>50–80 parcel/วัน</span></div>
+        <div class="meta-item"><label>อุปกรณ์</label><span>Samsung A-series</span></div>
+        <div class="meta-item"><label>พื้นที่</label><span>กทม. ฝั่งธนบุรี</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="info-box pain">
+      <h4>😣 Pain Points</h4>
+      <ul>
+        <li>ลูกค้าไม่รับสาย ต้องฝากไว้หน้าบ้าน</li>
+        <li>ที่อยู่ไม่ชัดเจน หาบ้านไม่เจอ</li>
+        <li>อัปเดตสถานะได้ช้าเพราะแบตหมด</li>
+      </ul>
+    </div>
+    <div class="info-box goal">
+      <h4>🎯 Goals</h4>
+      <ul>
+        <li>เห็นรายการ order ที่ต้องส่งวันนี้ชัดเจน</li>
+        <li>อัปเดต status ได้เร็ว กด 2 ทีจบ</li>
+        <li>มี note พิเศษจากลูกค้าถ้ามี</li>
+      </ul>
+    </div>
+  </div>
+
+  <br>
+  <div class="section-label">Roleplay Scenario — เช้าตรู่ก่อนออกส่ง</div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scene-num">01</span>
+      <div>
+        <div class="scene-title">รับ order รายวัน → ออกส่งหนังสือ</div>
+        <div class="scene-sub">7:30 น. · คลังสินค้า Swift · ก่อนออกรถ</div>
+      </div>
+    </div>
+    <div class="scene-body">
+      <div class="thought-box">
+        <span class="icon">💭</span>
+        <span>วิชัยต้องรู้ว่าวันนี้มีกี่ parcel และไปส่งที่ไหนบ้าง เพื่อวางเส้นทางให้ประหยัดเวลา</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <div class="step-content">
+            <div class="step-action">Login Swift Driver App → Read Order for Shipment</div>
+            <div class="step-detail">เห็นรายการ 12 orders ที่ต้องส่งวันนี้ แสดงที่อยู่ และ note พิเศษ (ถ้ามี)</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div class="step-content">
+            <div class="step-action">Plan เส้นทาง → รับ parcel จากคลัง</div>
+            <div class="step-detail">จัดเรียง order ตามโซน นับ parcel ให้ครบ แล้วออกรถ</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <div class="step-content">
+            <div class="step-action">ส่งของ → Scan + Update Shipment Status = "DELIVERED"</div>
+            <div class="step-detail">สแกน barcode แล้วกด Delivered ระบบส่งแจ้งเตือนให้ลูกค้าทันที</div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <div class="step-content">
+            <div class="step-action">กรณีส่งไม่ได้ → Update Status = "FAILED - ไม่มีคนรับ"</div>
+            <div class="step-detail">บันทึก note แล้วระบบ Bookshop จะแจ้งลูกค้าให้นัดเวลาส่งใหม่</div>
+          </div>
+        </div>
+      </div>
+      <div class="chat" style="margin-top:16px">
+        <div class="msg left">
+          <div class="msg-avatar">📱</div>
+          <div>
+            <div class="msg-name">ระบบ Bookshop → ลูกค้า (นิชา)</div>
+            <div class="msg-bubble">หนังสือของคุณถูกจัดส่งแล้วค่ะ! Tracking: SWT-2024-8821 คาดว่าจะได้รับวันนี้ช่วงบ่าย 🚚📦</div>
+          </div>
+        </div>
+        <div class="msg left">
+          <div class="msg-avatar">🔔</div>
+          <div>
+            <div class="msg-name">ระบบ → นิชา (หลังส่งสำเร็จ)</div>
+            <div class="msg-bubble">จัดส่งสำเร็จแล้วค่ะ! ได้รับหนังสือแล้วหรือยัง? ช่วยรีวิวให้คนอื่นด้วยนะคะ 😊</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+</script>
+</body>
+</html>
